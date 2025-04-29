@@ -1,0 +1,33 @@
+name: Build APK
+on: [push]  # 每次推送代码时触发编译
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # 使用 GitHub 的 Ubuntu 虚拟机
+
+    steps:
+      # 步骤 1：拉取代码到虚拟机
+      - uses: actions/checkout@v4
+
+      # 步骤 2：设置 Python 环境
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      # 步骤 3：安装 Buildozer 和依赖
+      - name: Install Buildozer
+        run: |
+          pip install buildozer cython==0.29.36
+
+      # 步骤 4：编译 APK
+      - name: Build Android APK
+        run: |
+          buildozer android debug
+
+      # 步骤 5：上传生成的 APK
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: apk  # 产物名称
+          path: bin/*.apk  # APK 文件路径
